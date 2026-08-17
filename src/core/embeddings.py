@@ -7,7 +7,9 @@ class EmbeddingModel:
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
         """Load the embedding model locally."""
         print(f"Loading embedding model: {model_name}...")
-        self.model = SentenceTransformer(model_name)
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = SentenceTransformer(model_name, device=device)
         
     def embed(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings and log the latency."""

@@ -2,12 +2,12 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from src.core.vectorstore import ChromaVectorStore
+from src.core.vectorstore import QdrantVectorStore
 from src.core.latency import logger
 
 def test_db():
     print("Initializing VectorStore...")
-    store = ChromaVectorStore(collection_name="test_collection")
+    store = QdrantVectorStore(collection_name="test_collection")
     
     # Clean up before test
     store.delete()
