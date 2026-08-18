@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker House Goa RAG Model</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <!-- Top Navigation -->
+    <header>
+        <div class="logo text-headline">2:47 PM Studio</div>
+        <nav class="nav-links">
+            <a href="#" class="active text-headline">Hacker House Goa</a>
+            <a href="#">Model</a>
+            <a href="#">Metrics</a>
+        </nav>
+        <div class="header-actions">
+            <button class="btn btn-outline visible-md">CHECK HYPE</button>
+            <button class="btn btn-hazard visible-md">APPLY</button>
+            <button class="btn-icon hidden-md" style="border: none; box-shadow: none;">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Splash Banner -->
+    <section class="banner">
+        <h1 class="text-headline">
+            HACKER<br>HOUSE
+            <span class="hindi">गोवा</span>
+        </h1>
+        <div class="banner-footer">
+            GOA, INDIA &nbsp;&middot;&nbsp; 28 - 31 OCT 2026<br><br>
+            2:47 PM STUDIO
+        </div>
+    </section>
+
+    <!-- Terminal App Section -->
+    <section class="terminal-section" id="terminal">
+        <div class="terminal-container">
+            <!-- Left Col: Console -->
+            <div class="terminal-main">
+                <div class="terminal-box">
+                    <h2 class="text-headline terminal-title">Terminal</h2>
+                    
+                    <!-- Terminal Output -->
+                    <div class="terminal-output" id="terminal-output">
+                        <p style="margin-bottom: 8px;">> INIT GOA_HOUSE_NODE...</p>
+                        <p style="margin-bottom: 8px;">> CONNECTING TO RAG BACKEND...</p>
+                        <p style="margin-bottom: 8px;">> STATUS: ONLINE. WAITING FOR INPUT...</p>
+                        <p style="margin-top: 16px; opacity: 0.5;"><span class="cursor-blink"></span></p>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="input-group">
+                        <button class="btn-icon" id="mic-btn">
+                            <span class="material-symbols-outlined">mic</span>
+                        </button>
+                        <div class="input-wrapper">
+                            <label class="input-label">Manual Input</label>
+                            <input type="text" id="query-input" class="terminal-input" placeholder="Type query here...">
+                        </div>
+                        <button class="btn btn-primary" id="send-btn">
+                            <span class="visible-md">SEND</span>
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Instructions (appears above metrics on mobile) -->
+                <div class="instructions-box hidden-md">
+                    <h3 class="instructions-title">Operator Instructions</h3>
+                    <ul class="instructions-list">
+                        <li><span class="bullet">></span> Click the glowing Mic button to initiate voice input mode.</li>
+                        <li><span class="bullet">></span> Alternatively, type your manual query into the text field.</li>
+                        <li><span class="bullet">></span> Monitor RAG retrieval telemetry in the lower dashboard.</li>
+                        <li class="warning">* Ensure local context is synced before querying.</li>
+                    </ul>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Time to First Token</div>
+                        <div class="metric-value">120ms</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Latency</div>
+                        <div class="metric-value">450ms</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Inference Speed</div>
+                        <div class="metric-value">85 t/s</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Input Tokens</div>
+                        <div class="metric-value">1,024</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Output Tokens</div>
+                        <div class="metric-value">256</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">System Load</div>
+                        <div class="metric-value highlight">88%</div>
+                        <div class="metric-bar" style="width: 88%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Col: Instructions (Desktop) -->
+            <aside class="sidebar visible-md">
+                <div class="instructions-box">
+                    <h3 class="instructions-title">Operator Instructions</h3>
+                    <ul class="instructions-list">
+                        <li><span class="bullet">></span> Click the glowing Mic button to initiate voice input mode.</li>
+                        <li><span class="bullet">></span> Alternatively, type your manual query into the text field.</li>
+                        <li><span class="bullet">></span> Monitor RAG retrieval telemetry in the lower dashboard.</li>
+                        <li class="warning">* Ensure local context is synced before querying.</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-text">
+            © 2026 HH-GOA. ALL RIGHTS RESERVED.
+        </div>
+        <div class="footer-links">
+            <a href="#">@247PMSTUDIO</a>
+            <a href="#">BRAND KIT</a>
+            <a href="#">TERM & CONDITIONS</a>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

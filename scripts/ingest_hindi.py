@@ -34,7 +34,7 @@ import pyarrow.parquet as pq
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.core.chunking import RecursiveChunker
+from src.core.chunking import RecursiveChunker, SentenceChunker
 from src.core.embeddings import EmbeddingModel
 
 from qdrant_client import QdrantClient
@@ -49,10 +49,10 @@ DEFAULT_PARQUET_PATH = (
     r"\bf5cdc1f26e581e519018e434db14edd1b77602b\train\hintrain.parquet"
 )
 DEFAULT_QDRANT_PATH = str(PROJECT_ROOT / "qdrant_hindi_benchmark")
-DEFAULT_COLLECTION = "hindi_minilm_baseline"
+DEFAULT_COLLECTION = "hindi_rag_production"
 DEFAULT_SAMPLE_SIZE = 1000
 DEFAULT_RANDOM_SEED = 42
-DEFAULT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_MODEL_NAME = "intfloat/multilingual-e5-small"
 DEFAULT_BATCH_SIZE = 256
 
 
@@ -66,9 +66,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--sample-size", type=int, default=DEFAULT_SAMPLE_SIZE, help="Rows to sample")
     p.add_argument("--seed", type=int, default=DEFAULT_RANDOM_SEED, help="Random seed")
     p.add_argument("--model", default=DEFAULT_MODEL_NAME, help="Sentence-transformer model name")
-    p.add_argument("--query-prefix", default="", help="Prefix for query texts (e.g. 'query: ')")
-    p.add_argument("--passage-prefix", default="", help="Prefix for passage texts (e.g. 'passage: ')")
+    p.add_argument("--query-prefix", default="query: ", help="Prefix for query texts")
+    p.add_argument("--passage-prefix", default="passage: ", help="Prefix for passage texts")
     p.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Embedding batch size")
+    p.add_argument("--chunker", choices=["recursive", "sentence"], default="recursive", help="Chunking strategy")
     p.add_argument("--output-stats", default=None, help="Path to write JSON stats (optional)")
     return p.parse_args()
 
@@ -168,15 +169,20 @@ def extract_and_deduplicate(
 # ---------------------------------------------------------------------------
 def chunk_passages(
     passages: List[Dict[str, Any]],
+    chunker_type: str = "recursive",
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """Chunk each unique passage using RecursiveChunker.
+    """Chunk each unique passage using the selected chunker.
 
     Returns:
         chunks: list of {"chunk_id": int, "text": str, "passage_id": int,
                           "query_ids": [...], "language": "hi"}
         stats:  chunking stats dict
     """
-    chunker = RecursiveChunker()  # defaults: max_chars=1000, overlap_chars=200
+    if chunker_type == "sentence":
+        chunker = SentenceChunker()
+    else:
+        chunker = RecursiveChunker()  # defaults: max_chars=1000, overlap_chars=200
+        
     chunks: List[Dict[str, Any]] = []
     chunk_counter = 0
     chunk_lengths: List[int] = []
@@ -206,6 +212,7 @@ def chunk_passages(
         "max_chunk_length": int(np.max(arr)),
         "chunker_max_chars": chunker.max_chars,
         "chunker_overlap_chars": chunker.overlap_chars,
+        "chunker_type": chunker_type,
     }
 
     print(f"[CHUNK] {stats['num_unique_passages']:,} passages → {stats['num_chunks']:,} chunks")
@@ -357,7 +364,7 @@ def main() -> None:
     unique_passages, eval_map = extract_and_deduplicate(df)
 
     # Step 5: Chunk
-    chunks, chunk_stats = chunk_passages(unique_passages)
+    chunks, chunk_stats = chunk_passages(unique_passages, chunker_type=args.chunker)
 
     # Step 6: Embed
     embeddings, embed_stats = embed_chunks(

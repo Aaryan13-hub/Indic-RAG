@@ -75,3 +75,13 @@ The improvement (+70.3pp Recall@5) is significant and the latency cost (+14.8 ms
 > Recall@5: 2.71% → 73.05% (+70.34pp)
 > MRR@5: 1.54% → 45.53%
 > Latency P50: 30.8 ms → 45.6 ms
+
+## Chunking Strategy Comparison
+
+Model fixed to `intfloat/multilingual-e5-small`. 1,000 sampled rows.
+
+| Chunker | Recall@5 | MRR@5 | P50 Latency | Total Chunks | Avg Length |
+|---------|----------|-------|-------------|--------------|------------|
+| recursive | 73.05% | 45.53% | 31.6 ms | 10096 | 334 |
+| sentence | 72.89% | 45.41% | 31.4 ms | 10060 | 334 |
+

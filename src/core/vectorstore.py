@@ -86,10 +86,20 @@ class ChromaVectorStore(VectorStore):
         self.collection = self.client.create_collection(name)
 
 class QdrantVectorStore(VectorStore):
-    def __init__(self, collection_name: str = "rag_collection", persist_directory: str = "./qdrant_db"):
+    def __init__(
+        self,
+        collection_name: str = "rag_collection",
+        persist_directory: str = "./qdrant_db",
+        vector_dim: int = 384,
+        query_prefix: str = "",
+        passage_prefix: str = "",
+    ):
         self.client = QdrantClient(path=persist_directory)
         self.embedding_model = EmbeddingModel()
         self.collection_name = collection_name
+        self.vector_dim = vector_dim
+        self.query_prefix = query_prefix
+        self.passage_prefix = passage_prefix
         
         # Check if collection exists, if not create it
         # all-MiniLM-L6-v2 outputs 384-dimensional vectors
@@ -98,14 +108,14 @@ class QdrantVectorStore(VectorStore):
         except Exception:
             self.client.create_collection(
                 collection_name=self.collection_name,
-                vectors_config=VectorParams(size=384, distance=Distance.COSINE),
+                vectors_config=VectorParams(size=self.vector_dim, distance=Distance.COSINE),
             )
             
     def add(self, chunks: List[str], metadata: List[Dict[str, Any]] = None):
         if not chunks:
             return
             
-        embeddings = self.embedding_model.embed(chunks)
+        embeddings = self.embedding_model.embed(chunks, prefix=self.passage_prefix)
         
         points = []
         for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
@@ -139,7 +149,7 @@ class QdrantVectorStore(VectorStore):
         """
         start_time = time.perf_counter()
 
-        query_embedding = self.embedding_model.embed([query_text])[0]
+        query_embedding = self.embedding_model.embed([query_text], prefix=self.query_prefix)[0]
 
         search_result = self.client.query_points(
             collection_name=self.collection_name,
@@ -168,5 +178,5 @@ class QdrantVectorStore(VectorStore):
         self.client.delete_collection(self.collection_name)
         self.client.create_collection(
             collection_name=self.collection_name,
-            vectors_config=VectorParams(size=384, distance=Distance.COSINE),
+            vectors_config=VectorParams(size=self.vector_dim, distance=Distance.COSINE),
         )
