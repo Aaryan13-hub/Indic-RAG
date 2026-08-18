@@ -205,11 +205,8 @@ class VoiceRAGOrchestrator:
         llm_backend: LLMBackend,
         embedding_model: Optional[EmbeddingModel] = None,
         # --- Guardrail thresholds -----------------------------------------
-        # Tune these against your corpus BEFORE setting a hard deployment value.
-        # See comments in guardrails.py for calibration guidance.
-        off_topic_threshold: float = 0.35,
-        groundedness_threshold: float = 0.35,   # ← PLACEHOLDER — tune empirically
-        # --- Retrieval config ---------------------------------------------
+        off_topic_threshold: float = 0.826,     # Calibrated for intfloat/multilingual-e5-small
+        groundedness_threshold: float = 0.75,
         max_retrieval_results: int = 2,
         # --- Retry config -------------------------------------------------
         stt_max_attempts: int = 2,       # 1 initial + 1 retry

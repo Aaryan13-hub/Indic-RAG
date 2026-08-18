@@ -3,64 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker House Goa RAG Model</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hacker House Goa — Indic RAG Voice Interface</title>
+    <meta name="description" content="Hindi Voice RAG pipeline powered by multilingual E5 embeddings, Qdrant, and GPT OSS 120B. Built at Hacker House Goa 2026.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=2">
 </head>
 <body>
     <div class="scanlines"></div>
 
-    <!-- Top Navigation -->
+    <!-- ═══════════════════════════════════════════════════════ HEADER -->
     <header>
         <div class="logo text-headline">2:47 PM Studio</div>
         <nav class="nav-links">
-            <a href="#" class="active text-headline">Hacker House Goa</a>
-            <a href="#">Model</a>
-            <a href="#">Metrics</a>
+            <a href="#banner" class="active text-headline">Hacker House Goa</a>
+            <a href="#terminal">Model</a>
+            <a href="#metrics">Metrics</a>
         </nav>
         <div class="header-actions">
             <button class="btn btn-outline visible-md">CHECK HYPE</button>
             <button class="btn btn-hazard visible-md">APPLY</button>
-            <button class="btn-icon hidden-md" style="border: none; box-shadow: none;">
+            <button class="btn-icon hidden-md" style="border:none;box-shadow:none;background:transparent;">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
     </header>
 
-    <!-- Splash Banner -->
-    <section class="banner">
+    <!-- ═══════════════════════════════════════════════════════ BANNER -->
+    <section class="banner" id="banner">
         <h1 class="text-headline">
             HACKER<br>HOUSE
             <span class="hindi">गोवा</span>
         </h1>
         <div class="banner-footer">
-            GOA, INDIA &nbsp;&middot;&nbsp; 28 - 31 OCT 2026<br><br>
+            GOA, INDIA &nbsp;&middot;&nbsp; 28&nbsp;–&nbsp;31 OCT 2026<br><br>
             2:47 PM STUDIO
         </div>
+        <a href="#terminal" class="scroll-hint" aria-label="Scroll to terminal">
+            <span class="material-symbols-outlined">keyboard_arrow_down</span>
+        </a>
     </section>
 
-    <!-- Terminal App Section -->
+    <!-- ═══════════════════════════════════════════════════════ TERMINAL -->
     <section class="terminal-section" id="terminal">
         <div class="terminal-container">
-            <!-- Left Col: Console -->
+
+            <!-- LEFT COL: Console -->
             <div class="terminal-main">
                 <div class="terminal-box">
                     <h2 class="text-headline terminal-title">Terminal</h2>
-                    
-                    <!-- Terminal Output -->
+
+                    <!-- Output window -->
                     <div class="terminal-output" id="terminal-output">
-                        <p style="margin-bottom: 8px;">> INIT GOA_HOUSE_NODE...</p>
-                        <p style="margin-bottom: 8px;">> CONNECTING TO RAG BACKEND...</p>
-                        <p style="margin-bottom: 8px;">> STATUS: ONLINE. WAITING FOR INPUT...</p>
-                        <p style="margin-top: 16px; opacity: 0.5;"><span class="cursor-blink"></span></p>
+                        <p style="margin-bottom:8px;">&gt; INIT GOA_HOUSE_NODE...</p>
+                        <p style="margin-bottom:8px;">&gt; CONNECTING TO RAG BACKEND...</p>
+                        <p style="margin-bottom:8px;">&gt; STATUS: ONLINE. WAITING FOR INPUT...</p>
+                        <p class="cursor-blink-wrap" style="margin-top:16px;opacity:0.5;"><span class="cursor-blink"></span></p>
                     </div>
 
-                    <!-- Input Area -->
+                    <!-- Input row -->
                     <div class="input-group">
-                        <button class="btn-icon" id="mic-btn">
+                        <button class="btn-icon" id="mic-btn" title="Click to record / stop recording">
                             <span class="material-symbols-outlined">mic</span>
                         </button>
                         <div class="input-wrapper">
-                            <label class="input-label">Manual Input</label>
+                            <label class="input-label" for="query-input">Manual Input</label>
                             <input type="text" id="query-input" class="terminal-input" placeholder="Type query here...">
                         </div>
                         <button class="btn btn-primary" id="send-btn">
@@ -70,63 +79,72 @@
                     </div>
                 </div>
 
-                <!-- Mobile Instructions (appears above metrics on mobile) -->
+                <!-- Mobile instructions (visible on small screens) -->
                 <div class="instructions-box hidden-md">
                     <h3 class="instructions-title">Operator Instructions</h3>
                     <ul class="instructions-list">
-                        <li><span class="bullet">></span> Click the glowing Mic button to initiate voice input mode.</li>
-                        <li><span class="bullet">></span> Alternatively, type your manual query into the text field.</li>
-                        <li><span class="bullet">></span> Monitor RAG retrieval telemetry in the lower dashboard.</li>
+                        <li><span class="bullet">&gt;</span> Click the glowing Mic button to initiate voice input mode.</li>
+                        <li><span class="bullet">&gt;</span> Alternatively, type your manual query into the text field.</li>
+                        <li><span class="bullet">&gt;</span> Monitor RAG retrieval telemetry in the lower dashboard.</li>
                         <li class="warning">* Ensure local context is synced before querying.</li>
                     </ul>
                 </div>
 
-                <!-- Metrics Grid -->
-                <div class="metrics-grid">
+                <!-- ═══════════════════════════════════ METRICS GRID -->
+                <div class="metrics-grid" id="metrics">
                     <div class="metric-card">
-                        <div class="metric-label">Time to First Token</div>
-                        <div class="metric-value">120ms</div>
+                        <div class="metric-label">STT Latency</div>
+                        <div class="metric-value" id="metric-stt">—</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-label">Total Latency</div>
-                        <div class="metric-value">450ms</div>
+                        <div class="metric-value" id="metric-total">—</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Inference Speed</div>
-                        <div class="metric-value">85 t/s</div>
+                        <div class="metric-label">LLM Generation</div>
+                        <div class="metric-value" id="metric-generation">—</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Input Tokens</div>
-                        <div class="metric-value">1,024</div>
+                        <div class="metric-label">Vector Retrieval</div>
+                        <div class="metric-value" id="metric-retrieval">—</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Output Tokens</div>
-                        <div class="metric-value">256</div>
+                        <div class="metric-label">Embedding</div>
+                        <div class="metric-value" id="metric-embedding">—</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">System Load</div>
-                        <div class="metric-value highlight">88%</div>
-                        <div class="metric-bar" style="width: 88%;"></div>
+                        <div class="metric-label">Groundedness Check</div>
+                        <div class="metric-value highlight" id="metric-groundedness">—</div>
+                        <div class="metric-bar" style="width:0%;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Col: Instructions (Desktop) -->
+            <!-- RIGHT COL: Instructions (desktop sidebar) -->
             <aside class="sidebar visible-md">
                 <div class="instructions-box">
                     <h3 class="instructions-title">Operator Instructions</h3>
                     <ul class="instructions-list">
-                        <li><span class="bullet">></span> Click the glowing Mic button to initiate voice input mode.</li>
-                        <li><span class="bullet">></span> Alternatively, type your manual query into the text field.</li>
-                        <li><span class="bullet">></span> Monitor RAG retrieval telemetry in the lower dashboard.</li>
+                        <li><span class="bullet">&gt;</span> Click the glowing Mic button to initiate voice input mode.</li>
+                        <li><span class="bullet">&gt;</span> Alternatively, type your manual query into the text field.</li>
+                        <li><span class="bullet">&gt;</span> Monitor RAG retrieval telemetry in the lower dashboard.</li>
                         <li class="warning">* Ensure local context is synced before querying.</li>
+                    </ul>
+                </div>
+                <div class="instructions-box" style="margin-top:auto;">
+                    <h3 class="instructions-title">Pipeline Status</h3>
+                    <ul class="instructions-list">
+                        <li><span class="bullet" style="color:var(--color-primary);">✓</span> Qdrant: hindi_rag_production</li>
+                        <li><span class="bullet" style="color:var(--color-primary);">✓</span> Embedding: multilingual-e5-small</li>
+                        <li><span class="bullet" style="color:var(--color-primary);">✓</span> LLM: GPT OSS 120B (Groq)</li>
+                        <li><span class="bullet" style="color:var(--color-primary);">✓</span> STT: Whisper Large v3 (Groq)</li>
                     </ul>
                 </div>
             </aside>
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- ═══════════════════════════════════════════════════════ FOOTER -->
     <footer>
         <div class="footer-text">
             © 2026 HH-GOA. ALL RIGHTS RESERVED.
@@ -134,10 +152,10 @@
         <div class="footer-links">
             <a href="#">@247PMSTUDIO</a>
             <a href="#">BRAND KIT</a>
-            <a href="#">TERM & CONDITIONS</a>
+            <a href="#">TERM &amp; CONDITIONS</a>
         </div>
     </footer>
 
-    <script src="app.js"></script>
+    <script src="/static/app.js"></script>
 </body>
 </html>

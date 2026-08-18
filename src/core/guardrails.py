@@ -233,6 +233,13 @@ def check_groundedness(
         _log.warning("[guardrail:groundedness] BLOCKED — no context chunks to compare against")
         return False, 0.0
 
+    # Bypass groundedness check for valid LLM refusals. The refusal string is mathematically
+    # dissimilar to the retrieved context, so it will always fail the cosine similarity check
+    # and incorrectly trigger a "hallucination" error if we don't explicitly allow it.
+    if "I cannot answer this based on the provided context." in answer:
+        _log.info("[guardrail:groundedness] BYPASS — valid LLM refusal detected.")
+        return True, 1.0
+
     # Concatenate all context chunks into a single passage for embedding.
     # A single embedding over the full context captures the aggregate semantic
     # space of the retrieved passages, which is what we compare against.

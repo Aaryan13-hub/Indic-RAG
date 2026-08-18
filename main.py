@@ -38,7 +38,11 @@ def main():
     db.embedding_model = embed_model
     
     # 4. LLM Backend
-    llm = GroqLLMBackend()
+    llm = GroqLLMBackend(
+        model_name="openai/gpt-oss-20b",
+        reasoning_effort="low",
+        max_completion_tokens=150
+    )
     
     # 5. Orchestrator
     orchestrator = VoiceRAGOrchestrator(
@@ -46,7 +50,7 @@ def main():
         vector_store=db,
         llm_backend=llm,
         embedding_model=embed_model,
-        off_topic_threshold=0.75,     # Tuned for E5 cosine similarity
+        off_topic_threshold=0.826,    # Calibrated against multilingual-e5-small Hindi benchmark (irrelevant P99 ≈ 0.826, relevant 0.849-0.906)
         groundedness_threshold=0.75,  # Tuned for E5 cosine similarity
     )
     

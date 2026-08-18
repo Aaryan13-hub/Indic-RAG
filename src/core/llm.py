@@ -7,9 +7,19 @@ import groq
 import ollama
 
 class GroqLLMBackend(LLMBackend):
-    def __init__(self, model_name: str = "openai/gpt-oss-120b"):
+    def __init__(self, model_name: str = "openai/gpt-oss-120b", reasoning_effort: str = None, max_completion_tokens: int = None):
         self.model_name = model_name
-        self.client = groq.Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        self.reasoning_effort = reasoning_effort
+        self.max_completion_tokens = max_completion_tokens
+        import httpx
+        
+        custom_http_client = httpx.Client(
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=100, keepalive_expiry=60.0)
+        )
+        self.client = groq.Groq(
+            api_key=os.environ.get("GROQ_API_KEY"),
+            http_client=custom_http_client
+        )
         
     def generate(self, prompt: str, system_prompt: str = None) -> Dict[str, Any]:
         start_time = time.perf_counter()
@@ -19,12 +29,18 @@ class GroqLLMBackend(LLMBackend):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
         
+        kwargs = {
+            "messages": messages,
+            "model": self.model_name,
+            "stream": True
+        }
+        if self.reasoning_effort is not None:
+            kwargs["reasoning_effort"] = self.reasoning_effort
+        if self.max_completion_tokens is not None:
+            kwargs["max_completion_tokens"] = self.max_completion_tokens
+
         # We stream the response to accurately measure Time-To-First-Token (TTFT)
-        response = self.client.chat.completions.create(
-            messages=messages,
-            model=self.model_name,
-            stream=True
-        )
+        response = self.client.chat.completions.create(**kwargs)
         
         first_token_time = None
         full_text = ""

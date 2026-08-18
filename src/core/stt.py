@@ -3,7 +3,7 @@ import time
 import requests
 from typing import Dict, Any
 from .latency import logger
-from elevenlabs.client import ElevenLabs
+
 import groq
 
 class SarvamSTT:
@@ -62,6 +62,7 @@ class ElevenLabsSTT:
         if not self.api_key:
             raise ValueError("ELEVENLABS_API_KEY environment variable is not set.")
             
+        from elevenlabs.client import ElevenLabs
         self.client = ElevenLabs(api_key=self.api_key)
         
     def transcribe(self, audio_file_path: str, language_code: str = None) -> str:
@@ -90,7 +91,15 @@ class GroqSTT:
         if not self.api_key:
             raise ValueError("GROQ_API_KEY environment variable is not set.")
             
-        self.client = groq.Groq(api_key=self.api_key)
+        import httpx
+        
+        custom_http_client = httpx.Client(
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=100, keepalive_expiry=60.0)
+        )
+        self.client = groq.Groq(
+            api_key=self.api_key,
+            http_client=custom_http_client
+        )
         
     def transcribe(self, audio_file_path: str, language_code: str = None) -> str:
         """
@@ -100,11 +109,17 @@ class GroqSTT:
         start_time = time.perf_counter()
         
         with open(audio_file_path, "rb") as f:
-            transcription = self.client.audio.transcriptions.create(
-                file=(os.path.basename(audio_file_path), f.read()),
-                model="whisper-large-v3",
-                prompt="The audio may contain Hindi or English."
-            )
+            kwargs = {
+                "file": (os.path.basename(audio_file_path), f.read()),
+                "model": "whisper-large-v3",
+                "prompt": "The audio may contain Hindi or English.",
+            }
+            if language_code:
+                kwargs["language"] = language_code
+            else:
+                kwargs["language"] = "hi"  # Default to Hindi to prevent Urdu script
+                
+            transcription = self.client.audio.transcriptions.create(**kwargs)
             
         duration_ms = (time.perf_counter() - start_time) * 1000
         logger.log("stt", duration_ms)
