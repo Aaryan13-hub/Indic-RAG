@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hacker House Goa RAG Model</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&amp;family=JetBrains+Mono:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#323200",
+                        "surface-container-high": "#282a2b",
+                        "on-primary": "#00391b",
+                        "tertiary-fixed": "#ffd7f5",
+                        "secondary-fixed": "#eaea00",
+                        "inverse-surface": "#e2e2e2",
+                        "on-tertiary-fixed-variant": "#810081",
+                        "background": "#121414",
+                        "on-tertiary-fixed": "#380038",
+                        "on-secondary-fixed": "#1d1d00",
+                        "secondary": "#ffffff",
+                        "on-surface-variant": "#bec9be",
+                        "inverse-on-surface": "#2f3131",
+                        "on-primary-fixed-variant": "#00522a",
+                        "surface-tint": "#83d99c",
+                        "on-background": "#e2e2e2",
+                        "tertiary-container": "#a100a1",
+                        "primary-container": "#006837",
+                        "on-secondary-fixed-variant": "#494900",
+                        "on-surface": "#e2e2e2",
+                        "surface-bright": "#37393a",
+                        "secondary-container": "#eaea00",
+                        "primary-fixed-dim": "#83d99c",
+                        "surface": "#121414",
+                        "on-primary-fixed": "#00210e",
+                        "surface-dim": "#121414",
+                        "tertiary": "#ffabf3",
+                        "on-tertiary-container": "#ffbdf3",
+                        "surface-container": "#1e2020",
+                        "on-error": "#690005",
+                        "on-tertiary": "#5b005b",
+                        "primary-fixed": "#9ef6b6",
+                        "primary": "#83d99c",
+                        "surface-variant": "#333535",
+                        "outline": "#899489",
+                        "secondary-fixed-dim": "#cdcd00",
+                        "tertiary-fixed-dim": "#ffabf3",
+                        "on-secondary-container": "#686800",
+                        "surface-container-highest": "#333535",
+                        "surface-container-low": "#1a1c1c",
+                        "surface-container-lowest": "#0c0f0f",
+                        "error": "#ffb4ab",
+                        "inverse-primary": "#0b6d3b",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#3f4940",
+                        "on-primary-container": "#8ee4a6"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "unit": "8px",
+                        "margin-desktop": "48px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "headline-xl": ["Bodoni Moda"],
+                        "body-md": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Bodoni Moda"],
+                        "body-lg": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Bodoni Moda"]
+                    },
+                    fontSize: {
+                        "headline-xl": ["120px", { "lineHeight": "110px", "letterSpacing": "-0.02em", "fontWeight": "900" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "700" }],
+                        "headline-lg": ["64px", { "lineHeight": "72px", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["40px", { "lineHeight": "44px", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>body {
+    background-color: #006837;
+    /* Base brand green from image */
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%), url(https://lh3.googleusercontent.com/aida-public/AB6AXuBkLnpdM9NCWfJ7LHEtQxMI7GC2DEai6DOOjXATaNK3JyZ3SSZZz1iUsZJAhNZpMnFYvVaiK3Hskx1R4fzM8P0Cylmaf8vPFiF9NNHhSWqCZtRbjyVEguyxzalEGyr0bW45gKyncw4EXB5xyxWo5NSdHs_lRYARHs_6cHF-oSiMhkI88eStJ5jXCKZKfDiWZM2IqJS5z-mTXpnZUzcp49o2ojJ4ls0T_hYEKKVZeh-W4gGG10s7K4px8Q);
+    background-size: cover;
+    background-attachment: fixed
+    }
+/* Scanline effect */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.2));
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 50
+    }
+/* Hazard pattern */
+.bg-hazard {
+    background-image: repeating-linear-gradient(-45deg, #eaea00, #eaea00 10px, #000 10px, #000 20px)
+    }
+/* Terminal blink */
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+        } 50% {
+        opacity: 0;
+        }
+    }
+.cursor-blink {
+    animation: blink 1s step-end infinite
+    }
+/* Glitch text effect on hover */
+.hover-glitch:hover {
+    text-shadow: 2px 0 #F0F, -2px 0 #0FF;
+    color: #fff
+    }</style>
+</head>
+<body class="font-body-md text-surface-container-lowest antialiased min-h-screen flex flex-col" data-alt="A dark green tropical background with subtle black palm tree silhouettes and a deep moody gradient, brutalist digital aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrJrKIT7f8Kvscz4zMD-1hD7IhcZdMglWzfBBj_5cBzV-NE-M1WMJ8AWu8h83r_lhjIaDUqdOGTdE6Tq0p17uWXCy-7dJ5JBwmOIscoSLKeSmX9JzZRe34QDvDr7XhdCZwOhe2hxAwfS8zZWVOB2Hzc646KfV5MEZ8j1rWSmDcEuoKROXZeEPLnZ1hW3uTU21Jn_IxWFnMWZYCG0TADwy3svP2iArmU81EthXtzFHIbNr7OLochQsKoXXmK6F0JKK3nI0'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;">
+<div class="scanlines"></div>
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background docked full-width top-0 border-b border-secondary-fixed/30 flex justify-between items-center w-full px-margin-desktop py-4 z-40 relative">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-lg text-secondary-fixed tracking-tighter uppercase text-headline-lg-mobile md:text-headline-lg">2:47 PM Studio</span>
+</div>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-secondary-fixed font-bold border-b-2 border-secondary-fixed pb-1" href="#">Hacker House Goa</a>
+<a class="text-outline dark:text-outline-variant font-body-md hover:text-tertiary-fixed-dim transition-colors duration-200" href="#">Model</a>
+<a class="text-outline dark:text-outline-variant font-body-md hover:text-tertiary-fixed-dim transition-colors duration-200" href="#">Metrics</a>
+</nav>
+<div class="flex items-center gap-unit">
+<button class="text-outline hover:text-tertiary-fixed-dim transition-colors duration-200 px-4 py-2 uppercase border border-secondary-fixed/30">CHECK HYPE</button>
+<button class="bg-hazard text-on-secondary font-bold px-6 py-2 border border-secondary-fixed uppercase hover-glitch shadow-[4px_4px_0_#FF00FF] transition-all">APPLY</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col md:flex-row p-margin-mobile md:p-margin-desktop gap-gutter z-10 relative max-w-container-max mx-auto w-full">
+<!-- Left Col: Console -->
+<section class="flex-grow flex flex-col gap-gutter">
+<div class="border border-secondary-fixed/30 bg-black/60 backdrop-blur-md p-6 flex flex-col gap-6 relative shadow-[8px_8px_0_rgba(234,234,0,0.2)] bg-black/80">
+<h1 class="font-headline-lg text-secondary-fixed uppercase leading-none mb-4 text-headline-lg-mobile md:text-[80px]">Terminal</h1>
+<!-- Terminal Output -->
+<div class="bg-surface-container-lowest border border-primary-container p-4 h-64 overflow-y-auto font-body-md text-primary font-body-md shadow-[inset_0_0_20px_rgba(0,104,55,0.5)]">
+<p class="mb-2">&gt; INIT GOA_HOUSE_NODE...</p>
+<p class="mb-2">&gt; CONNECTING TO RAG BACKEND...</p>
+<p class="mb-2">&gt; STATUS: ONLINE. WAITING FOR INPUT...</p>
+<p class="mt-4 opacity-50"><span class="cursor-blink bg-primary w-2 h-4 inline-block align-middle"></span></p>
+</div>
+<!-- Input Area -->
+<div class="flex gap-4 items-end">
+<button class="w-16 h-16 rounded-full border-2 border-secondary-fixed flex items-center justify-center text-secondary-fixed hover:bg-secondary-fixed hover:text-black transition-all shadow-[0_0_15px_#eaea00]">
+<span class="material-symbols-outlined text-3xl">mic</span>
+</button>
+<div class="flex-grow relative">
+<label class="absolute -top-6 left-0 text-secondary-fixed font-label-sm uppercase">Manual Input</label>
+<input class="w-full bg-transparent border border-secondary-fixed text-secondary-fixed p-3 focus:outline-none focus:border-tertiary-fixed font-body-md placeholder-outline-variant" placeholder="Type query here..." type="text"/>
+</div>
+<button class="bg-secondary-fixed text-black font-bold px-6 py-3 border border-secondary-fixed uppercase hover:bg-black hover:text-secondary-fixed transition-colors">SEND <span class="material-symbols-outlined align-middle ml-2">send</span></button>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+<!-- Metric Card -->
+<div class="border border-secondary-fixed/30 bg-black/40 p-4">
+<p class="text-outline uppercase text-label-sm mb-1">Time to First Token</p>
+<p class="text-secondary-fixed font-body-lg text-2xl font-bold">120ms</p>
+</div>
+<!-- Metric Card -->
+<div class="border border-secondary-fixed/30 bg-black/40 p-4">
+<p class="text-outline uppercase text-label-sm mb-1">Total Latency</p>
+<p class="text-secondary-fixed font-body-lg text-2xl font-bold">450ms</p>
+</div>
+<!-- Metric Card -->
+<div class="border border-secondary-fixed/30 bg-black/40 p-4">
+<p class="text-outline uppercase text-label-sm mb-1">Inference Speed</p>
+<p class="text-secondary-fixed font-body-lg text-2xl font-bold">85 t/s</p>
+</div>
+<!-- Metric Card -->
+<div class="border border-secondary-fixed/30 bg-black/40 p-4">
+<p class="text-outline uppercase text-label-sm mb-1">Input Tokens</p>
+<p class="text-secondary-fixed font-body-lg text-2xl font-bold">1,024</p>
+</div>
+<!-- Metric Card -->
+<div class="border border-secondary-fixed/30 bg-black/40 p-4">
+<p class="text-outline uppercase text-label-sm mb-1">Output Tokens</p>
+<p class="text-secondary-fixed font-body-lg text-2xl font-bold">256</p>
+</div>
+<!-- Metric Card -->
+<div class="border border-secondary-fixed/30 bg-black/40 p-4 relative overflow-hidden">
+<p class="text-outline uppercase text-label-sm mb-1 relative z-10">System Load</p>
+<p class="text-tertiary font-body-lg text-2xl font-bold relative z-10">88%</p>
+<div class="absolute bottom-0 left-0 h-1 bg-tertiary w-[88%]"></div>
+</div>
+</div>
+</section>
+<!-- Right Col: Instructions -->
+<aside class="w-full md:w-80 border-l-0 md:border-l border-secondary-fixed/30 pl-0 md:pl-gutter flex flex-col gap-8">
+<div class="border border-secondary-fixed/50 p-6 bg-surface-container-lowest">
+<h2 class="text-secondary-fixed font-body-lg uppercase mb-4 border-b border-secondary-fixed/30 pb-2">Operator Instructions</h2>
+<ul class="space-y-4 text-outline font-body-md">
+<li class="flex gap-2">
+<span class="text-tertiary">&gt;</span>
+<span class="">Click the glowing Mic button to initiate voice input mode.</span>
+</li>
+<li class="flex gap-2">
+<span class="text-tertiary">&gt;</span>
+<span class="">Alternatively, type your manual query into the text field.</span>
+</li>
+<li class="flex gap-2">
+<span class="text-tertiary">&gt;</span>
+<span class="">Monitor RAG retrieval telemetry in the lower dashboard.</span>
+</li>
+<li class="flex gap-2 mt-6 pt-4 border-t border-outline-variant/30 text-label-sm">
+<span class="text-error">* Ensure local context is synced before querying.</span>
+</li>
+</ul>
+</div>
+<!-- Decorative Element -->
+<div class="mt-auto hidden md:block opacity-30">
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="bg-background dark:bg-background docked full-width bottom-0 border-t border-secondary-fixed/30 flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-8 z-40 relative gap-4">
+<div class="text-secondary-fixed-dim font-body-md text-label-sm uppercase tracking-widest">
+            © 2026 HH-GOA. ALL RIGHTS RESERVED.
+        </div>
+<div class="flex gap-6">
+<a class="text-secondary-fixed-dim font-body-md text-label-sm uppercase tracking-widest hover:text-tertiary transition-colors hover:underline decoration-tertiary" href="#">@247PMSTUDIO</a>
+<a class="text-secondary-fixed-dim font-body-md text-label-sm uppercase tracking-widest hover:text-tertiary transition-colors hover:underline decoration-tertiary" href="#">BRAND KIT</a>
+<a class="text-secondary-fixed-dim font-body-md text-label-sm uppercase tracking-widest hover:text-tertiary transition-colors hover:underline decoration-tertiary" href="#">TERM &amp; CONDITIONS</a>
+</div>
+</footer>
+</body></html>

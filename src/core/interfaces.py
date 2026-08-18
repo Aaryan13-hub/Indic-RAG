@@ -8,9 +8,14 @@ class VectorStore(ABC):
         pass
 
     @abstractmethod
-    def query(self, query_text: str, k: int = 5) -> List[Dict[str, Any]]:
+    def query(self, query_text: str, k: int = 5, with_scores: bool = False) -> List[Dict[str, Any]]:
         """Query the vector store for top k most similar chunks.
-        Should return a list of dicts with at least 'chunk' and 'metadata' keys.
+
+        Returns a list of dicts with at least 'chunk' and 'metadata' keys.
+        When with_scores=True, each dict must also include a 'score' key
+        (float, cosine similarity in [0, 1] — higher means more similar).
+        Implementations that use a distance metric (e.g. Chroma L2) must
+        convert to cosine similarity before returning.
         """
         pass
 

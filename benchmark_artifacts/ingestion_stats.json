@@ -1,0 +1,23 @@
+{
+  "sample_size": 1000,
+  "random_seed": 42,
+  "total_rows_in_parquet": 778638,
+  "sampled_rows": 1000,
+  "num_unique_passages": 9943,
+  "num_chunks": 10096,
+  "avg_chunks_per_passage": 1.0153877099466961,
+  "avg_chunk_length": 333.6307448494453,
+  "min_chunk_length": 34,
+  "max_chunk_length": 1000,
+  "chunker_max_chars": 1000,
+  "chunker_overlap_chars": 200,
+  "chunker_type": "recursive",
+  "model_name": "intfloat/multilingual-e5-small",
+  "embedding_dimension": 384,
+  "total_embedding_time_s": 27.93,
+  "avg_embedding_time_ms": 2.767,
+  "throughput_chunks_per_sec": 361.4,
+  "qdrant_path": "D:\\Hackathon\\HHGoa\\Indic-RAG\\qdrant_hindi_benchmark",
+  "qdrant_collection": "hindi_rag_production",
+  "total_ingestion_time_s": 211.14
+}
