@@ -93,16 +93,30 @@ class QdrantVectorStore(VectorStore):
         vector_dim: int = 384,
         query_prefix: str = "",
         passage_prefix: str = "",
+        qdrant_url: str = None,
+        qdrant_api_key: str = None,
     ):
-        self.client = QdrantClient(path=persist_directory)
+        # ---------------------------------------------------------------------------
+        # Connection toggle: Use Qdrant Cloud if QDRANT_URL env var is set,
+        # otherwise fall back to the local SQLite DB on disk.
+        # ---------------------------------------------------------------------------
+        cloud_url = qdrant_url or os.environ.get("QDRANT_URL")
+        cloud_key = qdrant_api_key or os.environ.get("QDRANT_API")
+
+        if cloud_url:
+            self.client = QdrantClient(url=cloud_url, api_key=cloud_key)
+            print(f"[Qdrant] Connected to CLOUD: {cloud_url}")
+        else:
+            self.client = QdrantClient(path=persist_directory)
+            print(f"[Qdrant] Connected to LOCAL: {persist_directory}")
+
         self.embedding_model = EmbeddingModel()
         self.collection_name = collection_name
         self.vector_dim = vector_dim
         self.query_prefix = query_prefix
         self.passage_prefix = passage_prefix
-        
+
         # Check if collection exists, if not create it
-        # all-MiniLM-L6-v2 outputs 384-dimensional vectors
         try:
             self.client.get_collection(collection_name=self.collection_name)
         except Exception:
@@ -110,6 +124,7 @@ class QdrantVectorStore(VectorStore):
                 collection_name=self.collection_name,
                 vectors_config=VectorParams(size=self.vector_dim, distance=Distance.COSINE),
             )
+
             
     def add(self, chunks: List[str], metadata: List[Dict[str, Any]] = None):
         if not chunks:

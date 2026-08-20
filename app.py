@@ -33,14 +33,9 @@ from src.core.latency import logger as lat_logger
 stt = GroqSTT()
 embed_model = EmbeddingModel("intfloat/multilingual-e5-small")
 
-_lock = os.path.join(".", "qdrant_hindi_benchmark", ".lock")
-if os.path.exists(_lock):
-    os.remove(_lock)
-    log.info("Removed stale Qdrant lock file.")
-
 db = QdrantVectorStore(
     collection_name="hindi_rag_production",
-    persist_directory="./qdrant_hindi_benchmark",
+    persist_directory="./qdrant_hindi_benchmark",  # ignored when QDRANT_URL is set
     vector_dim=384,
     query_prefix="query: ",
     passage_prefix="passage: ",
@@ -244,95 +239,199 @@ def handle_audio(audio_path):
 import gradio as gr
 
 CSS = """
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Bodoni+Moda:wght@700&display=swap');
+
+:root {
+    --bg-dark:   #0d1a0d;
+    --bg-panel:  rgba(10, 24, 10, 0.92);
+    --neon-yellow: #eaea00;
+    --neon-green:  #83d99c;
+    --border:    rgba(131, 217, 156, 0.3);
+    --text-dim:  #6b8f6b;
+}
 
 body, .gradio-container {
-    background: #0a0a0f !important;
-    font-family: 'Inter', sans-serif !important;
+    background-color: var(--bg-dark) !important;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(131,217,156,0.03) 0px, transparent 1px, transparent 3px),
+        radial-gradient(ellipse at 10% 50%, rgba(20,60,20,0.6) 0%, transparent 60%),
+        radial-gradient(ellipse at 90% 50%, rgba(20,60,20,0.6) 0%, transparent 60%);
+    font-family: 'JetBrains Mono', monospace !important;
+    color: var(--neon-green) !important;
 }
 
-.indic-header {
+/* Scanline overlay */
+body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+    pointer-events: none; z-index: 9999;
+}
+
+.gradio-container { max-width: 1200px !important; }
+
+/* Panels */
+.gr-box, .gr-panel, .gr-form, .gr-block {
+    background: var(--bg-panel) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+}
+
+/* Labels */
+label, .gr-form label, .block .label-wrap span {
+    color: var(--neon-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+}
+
+/* Textboxes and inputs */
+textarea, input[type=text] {
+    background: rgba(0,20,0,0.8) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+    color: var(--neon-yellow) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    caret-color: var(--neon-yellow);
+}
+textarea:focus, input[type=text]:focus {
+    border-color: var(--neon-yellow) !important;
+    box-shadow: 0 0 8px rgba(234,234,0,0.3) !important;
+}
+
+/* Primary button */
+.gr-button-primary, button.primary {
+    background: var(--neon-yellow) !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    transition: all 0.15s ease !important;
+}
+.gr-button-primary:hover, button.primary:hover {
+    background: #000 !important;
+    color: var(--neon-yellow) !important;
+    box-shadow: 0 0 12px rgba(234,234,0,0.4), inset 0 0 0 1px var(--neon-yellow) !important;
+}
+
+/* Secondary button */
+button.secondary {
+    background: transparent !important;
+    color: var(--neon-green) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Tabs */
+.tab-nav button {
+    color: var(--text-dim) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.08em !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+.tab-nav button.selected {
+    color: var(--neon-yellow) !important;
+    border-bottom-color: var(--neon-yellow) !important;
+}
+
+/* Markdown output */
+.gr-prose, .gr-markdown {
+    color: var(--neon-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+.gr-prose h3 { color: var(--neon-yellow) !important; }
+.gr-prose code {
+    background: rgba(234,234,0,0.08) !important;
+    color: var(--neon-yellow) !important;
+    border: 1px solid rgba(234,234,0,0.2) !important;
+    border-radius: 0 !important;
+}
+
+/* Header */
+.hh-header {
     text-align: center;
-    padding: 2.5rem 1rem 1.5rem;
-    border-bottom: 1px solid rgba(99,102,241,.25);
+    padding: 2rem 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 1.5rem;
+    position: relative;
 }
-.indic-header h1 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(1.8rem, 5vw, 3rem);
-    font-weight: 800;
-    background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 .5rem;
+.hh-header .studio-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.hh-header h1 {
+    font-family: 'Bodoni Moda', serif;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    color: var(--neon-yellow);
+    line-height: 1;
     letter-spacing: -1px;
+    margin: 0;
+    text-shadow: 0 0 40px rgba(234,234,0,0.25);
 }
-.indic-header .subtitle {
-    font-size: .9rem;
-    color: #94a3b8;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: .08em;
+.hh-header .goa {
+    font-family: 'Bodoni Moda', serif;
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    color: #f472b6;
+    display: block;
+    margin-top: -0.25rem;
 }
-.indic-header .badges {
-    display: flex;
-    justify-content: center;
-    gap: .5rem;
-    margin-top: .75rem;
-    flex-wrap: wrap;
+.hh-header .meta {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    margin-top: 0.75rem;
+    text-transform: uppercase;
 }
-.badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .7rem;
-    padding: .25rem .6rem;
-    border-radius: 999px;
-    border: 1px solid;
-    letter-spacing: .05em;
-}
-.badge-purple { color: #a78bfa; border-color: rgba(167,139,250,.35); background: rgba(167,139,250,.08); }
-.badge-pink   { color: #f472b6; border-color: rgba(244,114,182,.35); background: rgba(244,114,182,.08); }
-.badge-green  { color: #34d399; border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.08); }
 
-.pipeline-status {
+/* Pipeline status bar */
+.pipeline-bar {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     justify-content: center;
     flex-wrap: wrap;
-    padding: 1.25rem 1rem;
-    border-top: 1px solid rgba(99,102,241,.15);
+    padding: 1rem;
+    border-top: 1px solid var(--border);
     margin-top: 1.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
 }
-.status-item {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .72rem;
-    color: #64748b;
-    letter-spacing: .05em;
-}
-.status-item span { color: #34d399; margin-right: .35rem; }
+.pipeline-bar .ok { color: var(--neon-green); margin-right: 0.3rem; }
+
+/* Audio recorder */
+.audio-recorder { border: 1px solid var(--border) !important; border-radius: 0 !important; }
 """
 
 HEADER_HTML = """
-<div class="indic-header">
-  <h1>INDIC — RAG &nbsp;🇮🇳</h1>
-  <p class="subtitle">HINDI VOICE RAG · HACKER HOUSE GOA 2026</p>
-  <div class="badges">
-    <span class="badge badge-purple">multilingual-e5-small</span>
-    <span class="badge badge-pink">Groq Whisper v3</span>
-    <span class="badge badge-green">GPT-OSS-20B</span>
-    <span class="badge badge-purple">Qdrant · Local</span>
-  </div>
+<div class="hh-header">
+  <div class="studio-tag">2:47 PM STUDIO</div>
+  <h1>HACKER<br>HOUSE<span class="goa">गोवा</span></h1>
+  <div class="meta">GOA, INDIA &nbsp;·&nbsp; 28–31 OCT 2026 &nbsp;·&nbsp; INDIC RAG 🇮🇳</div>
 </div>
 """
 
 PIPELINE_STATUS_HTML = """
-<div class="pipeline-status">
-  <span class="status-item"><span>✓</span> Qdrant: hindi_rag_production</span>
-  <span class="status-item"><span>✓</span> Embedding: multilingual-e5-small</span>
-  <span class="status-item"><span>✓</span> LLM: GPT-OSS-20B (Groq)</span>
-  <span class="status-item"><span>✓</span> STT: Whisper Large v3 (Groq)</span>
-  <span class="status-item"><span>✓</span> Guardrails: Input · Off-topic · Groundedness</span>
+<div class="pipeline-bar">
+  <span><span class="ok">✓</span> Qdrant: hindi_rag_production (Cloud)</span>
+  <span><span class="ok">✓</span> Embedding: multilingual-e5-small</span>
+  <span><span class="ok">✓</span> LLM: GPT-OSS-20B (Groq)</span>
+  <span><span class="ok">✓</span> STT: Whisper Large v3 (Groq)</span>
+  <span><span class="ok">✓</span> Guardrails: Input · Off-topic · Groundedness</span>
 </div>
 """
+
 
 with gr.Blocks(css=CSS, title="Indic-RAG | Hindi Voice RAG") as demo:
 
