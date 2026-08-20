@@ -4,7 +4,6 @@ from typing import Dict, Any
 from .interfaces import LLMBackend
 from .latency import logger
 import groq
-import ollama
 
 class GroqLLMBackend(LLMBackend):
     def __init__(self, model_name: str = "openai/gpt-oss-120b", reasoning_effort: str = None, max_completion_tokens: int = None):
@@ -67,8 +66,10 @@ class GroqLLMBackend(LLMBackend):
 class OllamaLLMBackend(LLMBackend):
     def __init__(self, model_name: str = "llama3.2:3b"):
         self.model_name = model_name
+        # Lazy import — ollama is only available in local dev, not on HF Spaces
+        import ollama as _ollama
         # Assumes local ollama is running on default port
-        self.client = ollama.Client() 
+        self.client = _ollama.Client()
         
     def generate(self, prompt: str, system_prompt: str = None) -> Dict[str, Any]:
         start_time = time.perf_counter()
