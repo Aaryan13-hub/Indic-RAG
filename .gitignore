@@ -1,5 +1,7 @@
-# Environments
+# Secrets — NEVER push these to GitHub
 .env
+
+# Virtual environment
 .venv/
 env/
 venv/
@@ -9,10 +11,19 @@ ENV/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Local Qdrant DB — excluded because the app uses Qdrant Cloud in production
+qdrant_hindi_benchmark/
+qdrant_hindi_benchmark_llm_test/
+qdrant_db/
+qdrant_temp/
+
+# HuggingFace dataset cache
 .cache/
 
-# Model downloads / HuggingFace cache
-# Note: qdrant_hindi_benchmark is NOT ignored so friends can use the pre-built vectors!
+# Large benchmark output files
+*.txt
+benchmark_artifacts/
 
 # IDE / OS files
 .vscode/
